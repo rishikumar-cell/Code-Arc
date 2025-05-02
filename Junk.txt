@@ -1,0 +1,74 @@
+///////////////    Teacher Register Serializer   ////////////////////////
+class registerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=models.Teacher
+        fields=['full_name','email','qualification','mobile_number','skills','password']
+        extra_kwargs={'password':{'write_only':True}}
+
+        def validate_email(self,value):
+            if models.Teacher.objects.filter(email=value).exists():
+                raise serializers.ValidationError("User With this email is already exisits")
+            return value
+            
+
+        def create(self,validated_data):
+            teacher=models.Teacher.create_user(
+                email=validated_data['email'],
+                password=validated_data['password']
+                )
+            return teacher
+        
+        
+///////////////    Teacher Login Serializer   ////////////////////////
+class LoginSerializer(serializers.Serializer):
+    email = serializers.CharField()
+    password = serializers.CharField()
+
+    def validate(self, data):
+        teacher = authenticate(**data)
+        if teacher and teacher.is_active:
+            return teacher
+        raise serializers.ValidationError("Incorrect Credentials")
+
+    
+
+        
+
+
+
+
+
+'''
+
+const navigate=useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [qualification, setQualification] = useState('');
+  const [mobile_number, setMobile_number] = useState('');
+  const [skills, setSkills] = useState('');
+  const [full_name, setFull_name] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState({});
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMessage("")
+    setError({})
+    try {
+      const response = await auth.register( full_name,qualification,mobile_number,skills, email,password);
+      setMessage('registration Successfull')
+
+      console.log(response.data);
+      setTimeout(() => {
+        navigate('/user-login')
+
+       }, 1000)
+
+
+    } catch (error) {
+     setError({general:"registration failed user already exists with this email"})
+    }
+  };
+
+'''
